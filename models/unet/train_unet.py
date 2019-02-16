@@ -23,6 +23,7 @@ from common.subsample import MaskFunc
 from data import transforms
 from data.mri_data import SliceData
 from models.unet.unet_model import UnetModel
+from kibernetika.kibernetika_utils import klclient
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -155,8 +156,12 @@ def train_epoch(args, epoch, model, data_loader, optimizer, writer):
 
         avg_loss = 0.99 * avg_loss + 0.01 * loss.item() if iter > 0 else loss.item()
         writer.add_scalar('TrainLoss', loss.item(), global_step + iter)
-
         if iter % args.report_interval == 0:
+            klclient.update_task_info({
+                '_epoch': int(epoch),
+                '_loss': float(loss.item()),
+                '_avg_loss': float(avg_loss)
+            })
             logging.info(
                 f'Epoch = [{epoch:3d}/{args.num_epochs:3d}] '
                 f'Iter = [{iter:4d}/{len(data_loader):4d}] '
@@ -223,6 +228,9 @@ def save_model(args, exp_dir, epoch, model, optimizer, best_dev_loss, is_new_bes
         f=exp_dir / 'model.pt'
     )
     if is_new_best:
+        klclient.update_task_info({
+            'model_path': str(exp_dir / 'best_model.pt')
+        })
         shutil.copyfile(exp_dir / 'model.pt', exp_dir / 'best_model.pt')
 
 
@@ -256,6 +264,18 @@ def build_optim(args, params):
 
 
 def main(args):
+    klclient.update_task_info({
+        'num-pools': args.num_pools,
+        'drop-prob': args.drop_prob,
+        'num-chans': args.num_chans,
+        'batch-size': args.batch_size,
+        'lr.lr': args.lr,
+        'lr.lr-step-size': args.lr_step_size,
+        'lr.lr-gamma': args.lr_gamma,
+        'weight-decay': args.weight_decay,
+        'checkpoint_path': args.checkpoint,
+
+    })
     args.exp_dir.mkdir(parents=True, exist_ok=True)
     writer = SummaryWriter(log_dir=str(args.exp_dir / 'summary'))
 
@@ -287,6 +307,10 @@ def main(args):
         is_new_best = dev_loss < best_dev_loss
         best_dev_loss = min(best_dev_loss, dev_loss)
         save_model(args, args.exp_dir, epoch, model, optimizer, best_dev_loss, is_new_best)
+        klclient.update_task_info({
+            '_epoch': int(epoch),
+            '_dev_loss': float(dev_loss)
+        })
         logging.info(
             f'Epoch = [{epoch:4d}/{args.num_epochs:4d}] TrainLoss = {train_loss:.4g} '
             f'DevLoss = {dev_loss:.4g} TrainTime = {train_time:.4f}s DevTime = {dev_time:.4f}s',
