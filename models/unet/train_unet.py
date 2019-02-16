@@ -257,7 +257,7 @@ def build_optim(args, params):
 
 def main(args):
     args.exp_dir.mkdir(parents=True, exist_ok=True)
-    writer = SummaryWriter(log_dir=args.exp_dir + '/summary')
+    writer = SummaryWriter(log_dir=str(args.exp_dir / 'summary'))
 
     if args.resume:
         checkpoint, model, optimizer = load_model(args.checkpoint)
