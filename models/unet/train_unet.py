@@ -273,7 +273,7 @@ def main(args):
         'lr.lr-step-size': args.lr_step_size,
         'lr.lr-gamma': args.lr_gamma,
         'weight-decay': args.weight_decay,
-        'checkpoint_path': args.checkpoint,
+        'checkpoint_path': str(args.exp_dir),
 
     })
     args.exp_dir.mkdir(parents=True, exist_ok=True)
