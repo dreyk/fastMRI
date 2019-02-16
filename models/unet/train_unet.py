@@ -97,13 +97,13 @@ def create_datasets(args):
     dev_mask = MaskFunc(args.center_fractions, args.accelerations)
 
     train_data = SliceData(
-        root=args.data_path / f'{args.challenge}_train',
+        root=args.data_path / 'train',
         transform=DataTransform(train_mask, args.resolution, args.challenge),
         sample_rate=args.sample_rate,
         challenge=args.challenge
     )
     dev_data = SliceData(
-        root=args.data_path / f'{args.challenge}_val',
+        root=args.data_path / 'val',
         transform=DataTransform(dev_mask, args.resolution, args.challenge, use_seed=True),
         sample_rate=args.sample_rate,
         challenge=args.challenge,
