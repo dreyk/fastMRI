@@ -1,4 +1,5 @@
 import os
+import sys
 
 
 class _FakeKibernetikaMgr(object):
@@ -24,7 +25,10 @@ class KibernetikaMgr(object):
         return os.environ.get('BUILD_ID', None)
 
     def update_task_info(self, submit):
-        self._cl.update_task_info(submit)
+        try:
+            self._cl.update_task_info(submit)
+        except:
+            print('Unexpected error during submit state: {}'.format(sys.exc_info()[0]))
 
 
 klclient = KibernetikaMgr()
