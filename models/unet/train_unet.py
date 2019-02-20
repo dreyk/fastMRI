@@ -141,8 +141,9 @@ def create_data_loaders(args):
 def train_epoch(args, epoch, model, data_loader, optimizer, writer):
     model.train()
     avg_loss = 0.
-    start_epoch = start_iter = time.perf_counter()
+    start_epoch = start_iter = start_series = time.perf_counter()
     global_step = epoch * len(data_loader)
+
     for iter, data in enumerate(data_loader):
         input, target, mean, std, norm = data
         input = input.unsqueeze(1).to(args.device)
@@ -167,7 +168,11 @@ def train_epoch(args, epoch, model, data_loader, optimizer, writer):
                 f'Iter = [{iter:4d}/{len(data_loader):4d}] '
                 f'Loss = {loss.item():.4g} Avg Loss = {avg_loss:.4g} '
                 f'Time = {time.perf_counter() - start_iter:.4f}s',
+                f'LTime = {time.perf_counter() - start_series:.4f}s',
+                f'Steps/sec = {(float(args.report_interval)/(time.perf_counter() - start_series)):.4f}s',
             )
+
+            start_series = time.perf_counter()
         start_iter = time.perf_counter()
     return avg_loss, time.perf_counter() - start_epoch
 
