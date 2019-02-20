@@ -170,7 +170,7 @@ def train_epoch(args, epoch, model, data_loader, optimizer, writer):
                 f'Loss = {loss.item():.4g} Avg Loss = {avg_loss:.4g} '
                 f'Time = {time.perf_counter() - start_iter:.4f}s',
                 f'LTime = {time.perf_counter() - start_series:.4f}s',
-                f'Steps/sec = {speed:.4f}s'
+                f'Steps_sec = {speed:.4f}',
             )
 
             start_series = time.perf_counter()
