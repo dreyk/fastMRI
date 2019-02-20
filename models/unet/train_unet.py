@@ -163,13 +163,14 @@ def train_epoch(args, epoch, model, data_loader, optimizer, writer):
                 '_loss': float(loss.item()),
                 '_avg_loss': float(avg_loss)
             })
+            speed = (float(args.report_interval)/(time.perf_counter() - start_series))
             logging.info(
                 f'Epoch = [{epoch:3d}/{args.num_epochs:3d}] '
                 f'Iter = [{iter:4d}/{len(data_loader):4d}] '
                 f'Loss = {loss.item():.4g} Avg Loss = {avg_loss:.4g} '
                 f'Time = {time.perf_counter() - start_iter:.4f}s',
                 f'LTime = {time.perf_counter() - start_series:.4f}s',
-                f'Steps/sec = {(float(args.report_interval)/(time.perf_counter() - start_series)):.4f}s',
+                f'Steps/sec = {speed:.4f}s'
             )
 
             start_series = time.perf_counter()
