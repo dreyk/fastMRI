@@ -168,8 +168,8 @@ def train_epoch(args, epoch, model, data_loader, optimizer, writer):
                 f'Epoch = [{epoch:3d}/{args.num_epochs:3d}] '
                 f'Iter = [{iter:4d}/{len(data_loader):4d}] '
                 f'Loss = {loss.item():.4g} Avg Loss = {avg_loss:.4g} '
-                f'Time = {time.perf_counter() - start_iter:.4f}s',
-                f'LTime = {time.perf_counter() - start_series:.4f}s',
+                f'Time = {time.perf_counter() - start_iter:.4f}s'
+                f'LTime = {time.perf_counter() - start_series:.4f}s'
                 f'Steps_sec = {speed:.4f}',
             )
 
